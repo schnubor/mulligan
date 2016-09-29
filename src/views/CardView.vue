@@ -24,22 +24,11 @@ export default {
         }
     },
     computed: {},
-    methods: {
-        searchCard () {
-            this.$http.get('https://api.magicthegathering.io/v1/cards?set=ktk&colors=red,white,blue').then((response) => {
-                console.log('Success!')
-                this.cards = response.body.cards
-            }, (error) => {
-                console.warn('Error:', error)
-            })
-        }
-    },
+    methods: {},
     components: {}
 }
 </script>
 
 <style lang="css" scoped>
-    .card {
-        border: 1px solid rgba(0,0,0,0);
-    }
+    
 </style>
