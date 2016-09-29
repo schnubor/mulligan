@@ -72,7 +72,7 @@
 
         <div class="container">
             <div class="row">
-                <div class="col-md-2" v-for="card in cards" :key="card.id">
+                <div class="col-md-2" v-for="card in cards" :key="card.id" v-if="card.imageUrl">
                     <div class="card">
                         <img class="card-img" :src="card.imageUrl" :alt="card.name" width="100%"/>
                     </div>
