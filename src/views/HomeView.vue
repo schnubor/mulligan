@@ -66,11 +66,11 @@
             </div>
         </div>
 
-        <transition name="fade" mode="in-out">
+        <transition name="fade" mode="out-in">
             <div class="container" v-if="!fetched">
-
+                <h1 class="text-xs-center">Search. Build. Play.</h1>
             </div>
-            <div class="container" v-if="fetched">
+            <div class="container" v-else>
                 <!-- Pagination -->
                 <div class="pages row">
                     <div class="col-md-12">
@@ -170,6 +170,14 @@ export default {
         margin-bottom: 30px;
     }
 
+    h1 {
+        font-weight: 200;
+        opacity: .4;
+        text-transform: uppercase;
+        letter-spacing: 4px;
+        margin: 100px 0;
+    }
+
     label {
         color: white;
         font-weight: 100;
@@ -188,9 +196,10 @@ export default {
     .btn.btn-outline-secondary {
         color: white;
         border: 2px solid white;
-        font-weight: 200;
+        font-weight: 300;
         opacity: 0.8;
         transition: .2s all;
+        border-radius: 2rem;
     }
 
     .btn.btn-outline-secondary:active, .btn.btn-outline-secondary:focus {

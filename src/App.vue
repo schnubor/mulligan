@@ -1,12 +1,12 @@
 <template>
 <div>
-    <nav class="navbar navbar-fixed-top navbar-light bg-faded">
+    <nav class="navbar navbar-top navbar-light bg-faded">
         <div class="container" id="exCollapsingNavbar2">
             <router-link class="navbar-brand" to="/">Mulligan</router-link>
         </div>
     </nav>
 
-    <router-view style="margin-top: 54px;"></router-view>
+    <router-view ></router-view>
 
 </div>
 </template>
