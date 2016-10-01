@@ -5,6 +5,7 @@ import VueResource from 'vue-resource'
 
 // External CSS
 import './assets/css/bootstrap.min.css'
+import './assets/css/font-awesome.min.css'
 
 // Initialize Vue Resource
 Vue.use(VueResource)

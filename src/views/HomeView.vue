@@ -60,28 +60,33 @@
 
                     </div>
                     <div class="row m-t-2 text-xs-center">
-                        <button type="submit" class="btn btn-lg btn-outline-secondary" @click.stop.prevent="search">Find Cards</button>
+                        <button type="submit" class="btn btn-lg btn-outline-secondary" @click.stop.prevent="search"><i class="fa fa-search"></i> Find Cards</button>
                     </div>
                 </form>
             </div>
         </div>
 
         <transition name="fade" mode="out-in">
-            <div class="container" v-if="!fetched">
-                <h1 class="text-xs-center">Search. Build. Play.</h1>
-            </div>
-            <div class="container" v-else>
-                <!-- Pagination -->
-                <div class="pages row">
-                    <div class="col-md-12">
-                        <button class="btn btn-sm btn-secondary" disabled>Prev</button>
-                        <button class="btn btn-sm btn-secondary">Next</button>
-                        <span>Page 1 of 2</span>
-                        <hr>
-                    </div>
+            <div>
+                <div class="container" v-if="!fetched && !error">
+                    <h1 class="text-xs-center">{{ loading ? "Loading ..." : "Search. Build. Play." }}</h1>
                 </div>
-                <!-- Card list -->
-                <cardList :cards="cards"></cardList>
+                <div class="container">
+                    <h1 class="error text-xs-center">-_-;</h1>
+                </div>
+                <div class="container" v-if="fetched">
+                    <!-- Pagination -->
+                    <div class="pages row">
+                        <div class="col-md-12">
+                            <button class="btn btn-sm btn-secondary" disabled>Prev</button>
+                            <button class="btn btn-sm btn-secondary">Next</button>
+                            <span>Page 1 of 2</span>
+                            <hr>
+                        </div>
+                    </div>
+                    <!-- Card list -->
+                    <cardList :cards="cards"></cardList>
+                </div>
             </div>
         </transition>
     </div>
@@ -101,6 +106,8 @@ export default {
             colors: [],
             cards: {},
             fetched: false,
+            loading: false,
+            error: false,
             pagination: {
                 total: 0,
                 page: 1,
@@ -132,10 +139,13 @@ export default {
     methods: {
         search () {
             this.fetched = false
+            this.loading = true
+
             document.getElementById('quicksearchinput').blur()
             this.$http.get(this.apiUrl).then((response) => {
                 console.log('Success!')
                 this.fetched = true
+                this.loading = false
                 // Pagination
                 console.log(response)
                 this.pagination.total = response.headers.get('total-count')
@@ -143,6 +153,9 @@ export default {
                 console.log(link)
                 this.cards = response.body.cards
             }, (error) => {
+                this.loading = false
+                this.error = true
+
                 console.warn('Error:', error)
             })
         }
@@ -172,10 +185,14 @@ export default {
 
     h1 {
         font-weight: 200;
-        opacity: .4;
+        opacity: .3;
         text-transform: uppercase;
         letter-spacing: 4px;
         margin: 100px 0;
+    }
+
+    h1.error {
+        color: rgb(162, 68, 69);
     }
 
     label {
