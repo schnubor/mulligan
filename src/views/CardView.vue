@@ -1,18 +1,10 @@
 <template lang="html">
     <div class="container">
-        <h2>Card</h2>
+        <h2>{{ card.name }}</h2>
         <p>
             ID: {{ $route.params.id }}
         </p>
-        <button type="button" class="btn btn-primary" @click="searchCard">Fetch Card</button>
-        <hr>
-        <div class="row">
-            <div class="col-md-3" v-for="card in cards" :key="card.id">
-                <div class="card">
-                    <img class="card-img" :src="card.imageUrl" :alt="card.name" width="100%"/>
-                </div>
-            </div>
-        </div>
+        <img :src="card.imageUrl" :alt="card.name" />
     </div>
 </template>
 
@@ -20,15 +12,34 @@
 export default {
     data () {
         return {
-            cards: {}
+            loading: true,
+            error: false,
+            card: {}
         }
     },
+    mounted () {
+        this.fetchCard()
+    },
     computed: {},
-    methods: {},
+    methods: {
+        fetchCard () {
+            let uri = 'https://api.magicthegathering.io/v1/cards/' + this.$route.params.id
+
+            this.$http.get(uri).then((response) => {
+                this.loading = false
+
+                // Show card
+                this.card = response.body.card
+            }, (error) => {
+                this.error = true
+                console.warn(error)
+            })
+        }
+    },
     components: {}
 }
 </script>
 
 <style lang="css" scoped>
-    
+
 </style>

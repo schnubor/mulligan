@@ -8,7 +8,7 @@
     </nav>
 
     <!-- Content -->
-    <router-view ></router-view>
+    <router-view></router-view>
 
     <!-- Footer -->
     <footer class="m-t-2">

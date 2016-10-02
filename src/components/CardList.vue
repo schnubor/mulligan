@@ -3,7 +3,9 @@
         <div class="row" v-for="group in cards">
             <div class="col-md-3" v-for="card in group" :key="card.id" v-if="card.imageUrl">
                 <div class="card">
-                    <img class="card-img" :src="card.imageUrl" :alt="card.name" width="100%"/>
+                    <router-link :to="{ name: 'card', params: { id: card.multiverseid }}">
+                        <img class="card-img" :src="card.imageUrl" :alt="card.name" width="100%"/>
+                    </router-link>
                 </div>
             </div>
         </div>

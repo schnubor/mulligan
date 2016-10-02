@@ -6,8 +6,8 @@ import CardView from '../views/CardView.vue'
 Vue.use(Router)
 
 const routes = [
-    { path: '/', component: HomeView },
-    { path: '/card/:id', component: CardView }
+    { path: '/', name: 'home', component: HomeView },
+    { path: '/card/:id', name: 'card', component: CardView }
 ]
 
 export default new Router({

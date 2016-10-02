@@ -155,9 +155,6 @@ export default {
         },
         pageCount () {
             return Math.ceil(this.pagination.totalResults / this.pagination.pageSize)
-        },
-        nextPageUri () {
-            return 'https://api.magicthegathering.io/v1/cards?cmc=0&colors=&name=&page=2&pageSize=32&types='
         }
     },
     methods: {
