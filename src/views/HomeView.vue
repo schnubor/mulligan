@@ -61,14 +61,14 @@
 
                     </div>
                     <div class="row m-t-2 text-xs-center">
-                        <button type="submit" class="btn btn-lg btn-outline-secondary" @click.stop.prevent="fetchPage(searchUrl)"><i class="fa fa-search"></i> Find Cards</button>
+                        <button type="submit" class="btn btn-lg btn-outline-secondary" @click.stop.prevent="newSearch"><i class="fa fa-search"></i> Find Cards</button>
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- Loading -->
-        <div class="container" v-if="!fetched && !error" key="loading">
+        <div class="container" v-if="!fetched && !error && !noresults" key="loading">
             <h1 class="text-xs-center">{{ loading ? "Loading ..." : "Search. Build. Play." }}</h1>
         </div>
 
@@ -80,11 +80,11 @@
             </h1>
         </div>
 
-        <!-- Error -->
-        <div class="container" v-if="error" key="error">
+        <!-- No results -->
+        <div class="container" v-if="noresults" key="noresults">
             <h1 class="error text-xs-center">
-                ლ(ಠ益ಠლ) <br>
-                <small>An error occured ...</small>
+                ಠ_ಠ <br>
+                <small>No results.</small>
             </h1>
         </div>
 
@@ -126,6 +126,7 @@ export default {
             fetched: false,
             loading: false,
             error: false,
+            noresults: false,
             pagination: {
                 page: 1,
                 pageSize: 32,
@@ -161,15 +162,9 @@ export default {
     },
     methods: {
         fetchPage (uri) {
-            this.fetched = false
-            this.loading = true
-            this.noresults = false
             this.cards = []
 
-            document.getElementById('quicksearchinput').blur()
-
             this.$http.get(uri).then((response) => {
-                console.log('Success!')
                 this.loading = false
 
                 // Pagination
@@ -187,9 +182,19 @@ export default {
             }, (error) => {
                 this.loading = false
                 this.error = true
-
-                console.warn('Error:', error)
+                console.warn(error)
             })
+        },
+        newSearch () {
+            this.fetched = false
+            this.loading = true
+            this.noresults = false
+            this.cards = []
+            this.pagination.page = 1
+
+            document.getElementById('quicksearchinput').blur()
+
+            this.fetchPage(this.searchUrl)
         },
         paginate (direction) {
             if (direction === 'next') {
