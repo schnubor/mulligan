@@ -8,7 +8,7 @@
 
     <router-view ></router-view>
 
-    <footer>
+    <footer class="m-t-2">
         <div class="container">
             <span class="small pull-left">
                 Build by <a href="http://twitter.com/schnubor" target="_blank">schnubor</a> with <a href="http://vuejs.org" target="_blank">Vue.js 2.0</a>

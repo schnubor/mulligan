@@ -23,6 +23,7 @@
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <select class="form-control form-control-sm " v-model="modifier">
+                                            <option value="">equal</option>
                                             <option value="gt">greater</option>
                                             <option value="gte">greater or equal</option>
                                             <option value="lt">lesser</option>
@@ -66,34 +67,50 @@
             </div>
         </div>
 
-        <transition name="fade" mode="out-in">
-            <div>
-                <div class="container" v-if="!fetched && !error">
-                    <h1 class="text-xs-center">{{ loading ? "Loading ..." : "Search. Build. Play." }}</h1>
-                </div>
-                <div class="container">
-                    <h1 class="error text-xs-center">-_-;</h1>
-                </div>
-                <div class="container" v-if="fetched">
-                    <!-- Pagination -->
-                    <div class="pages row">
-                        <div class="col-md-12">
-                            <button class="btn btn-sm btn-secondary" disabled>Prev</button>
-                            <button class="btn btn-sm btn-secondary">Next</button>
-                            <span>Page 1 of 2</span>
-                            <hr>
-                        </div>
-                    </div>
-                    <!-- Card list -->
-                    <cardList :cards="cards"></cardList>
-                </div>
+        <!-- Loading -->
+        <div class="container" v-if="!fetched && !error" key="loading">
+            <h1 class="text-xs-center">{{ loading ? "Loading ..." : "Search. Build. Play." }}</h1>
+        </div>
+
+        <!-- Error -->
+        <div class="container" v-if="error" key="error">
+            <h1 class="error text-xs-center">
+                ლ(ಠ益ಠლ) <br>
+                <small>An error occured ...</small>
+            </h1>
+        </div>
+
+        <!-- Error -->
+        <div class="container" v-if="error" key="error">
+            <h1 class="error text-xs-center">
+                ლ(ಠ益ಠლ) <br>
+                <small>An error occured ...</small>
+            </h1>
+        </div>
+
+        <!-- Cards -->
+        <div class="container" v-if="fetched" key="fetched">
+            <!-- Pagination -->
+            <div v-if="pageCount > 1">
+                <pagination :links="pagination.link" :pageCount="pageCount"></pagination>
+                <hr>
             </div>
-        </transition>
+            
+            <!-- Card list -->
+            <cardList :cards="cards"></cardList>
+
+            <!-- Pagination -->
+            <div v-if="pageCount > 1">
+                <hr>
+                <pagination :links="pagination.link" :pageCount="pageCount"></pagination>
+            </div>
+        </div>
     </div>
 </template>
 
 <script>
 import queryString from 'query-string'
+import Pagination from '../components/Pagination.vue'
 import CardList from '../components/CardList.vue'
 
 export default {
@@ -104,22 +121,19 @@ export default {
             name: '',
             type: '',
             colors: [],
-            cards: {},
+            cards: [],
             fetched: false,
             loading: false,
             error: false,
             pagination: {
-                total: 0,
-                page: 1,
-                pageSize: 50,
-                nextPageUri: '',
-                prevPageUri: '',
-                lastPageUri: ''
+                pageSize: 32,
+                totalResults: 0,
+                link: ''
             }
         }
     },
     computed: {
-        apiUrl () {
+        searchUrl () {
             let baseUrl = 'https://api.magicthegathering.io/v1/cards?'
             let params = {}
 
@@ -132,26 +146,35 @@ export default {
             const stringified = queryString.stringify(params)
             return baseUrl + stringified
         },
-        pages () {
-            return Math.ceil(this.total / this.pageSize)
+        pageCount () {
+            return Math.ceil(this.pagination.totalResults / this.pagination.pageSize)
         }
     },
     methods: {
         search () {
             this.fetched = false
             this.loading = true
+            this.noresults = false
+            this.cards = []
 
             document.getElementById('quicksearchinput').blur()
-            this.$http.get(this.apiUrl).then((response) => {
+
+            this.$http.get(this.searchUrl).then((response) => {
                 console.log('Success!')
-                this.fetched = true
                 this.loading = false
+
                 // Pagination
-                console.log(response)
-                this.pagination.total = response.headers.get('total-count')
-                let link = response.headers.get('link')
-                console.log(link)
-                this.cards = response.body.cards
+                this.pagination.link = response.headers.get('link')
+                this.pagination.totalResults = response.headers.get('total-count')
+                // Show cards
+                if (response.body.cards.length) {
+                    for (let card of response.body.cards) {
+                        if (card.imageUrl) this.cards.push(card)
+                    }
+                    this.fetched = true
+                } else {
+                    this.noresults = true
+                }
             }, (error) => {
                 this.loading = false
                 this.error = true
@@ -161,7 +184,8 @@ export default {
         }
     },
     components: {
-        cardList: CardList
+        cardList: CardList,
+        pagination: Pagination
     }
 }
 </script>
@@ -191,8 +215,9 @@ export default {
         margin: 100px 0;
     }
 
-    h1.error {
-        color: rgb(162, 68, 69);
+    h1 small {
+        text-transform: none;
+        font-size: 12px;
     }
 
     label {

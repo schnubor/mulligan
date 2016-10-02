@@ -15,11 +15,10 @@
   "dependencies": {
     "babel-runtime": "^6.0.0",
     "bootstrap": "^4.0.0-alpha.4",
-    "font-awesome": "^4.6.3",
     "query-string": "^4.2.3",
-    "vue": "^2.0.0-rc.8",
+    "vue": "^2.0.0",
     "vue-resource": "^1.0.3",
-    "vue-router": "^2.0.0-rc.6"
+    "vue-router": "^2.0.0"
   },
   "devDependencies": {
     "autoprefixer": "^6.4.0",
@@ -71,7 +70,7 @@
     "sinon-chai": "^2.8.0",
     "url-loader": "^0.5.7",
     "vue-hot-reload-api": "^1.2.0",
-    "vue-loader": "^9.4.0",
+    "vue-loader": "^9.5.1",
     "webpack": "^1.12.2",
     "webpack-dev-middleware": "^1.4.0",
     "webpack-hot-middleware": "^2.6.0",
