@@ -61,7 +61,7 @@
 
                     </div>
                     <div class="row m-t-2 text-xs-center">
-                        <button type="submit" class="btn btn-lg btn-outline-secondary" @click.stop.prevent="search"><i class="fa fa-search"></i> Find Cards</button>
+                        <button type="submit" class="btn btn-lg btn-outline-secondary" @click.stop.prevent="fetchPage(searchUrl)"><i class="fa fa-search"></i> Find Cards</button>
                     </div>
                 </form>
             </div>
@@ -92,17 +92,17 @@
         <div class="container" v-if="fetched" key="fetched">
             <!-- Pagination -->
             <div v-if="pageCount > 1">
-                <pagination :links="pagination.link" :pageCount="pageCount"></pagination>
+                <pagination :page="pagination.page" :pageCount="pageCount" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
                 <hr>
             </div>
-            
+
             <!-- Card list -->
-            <cardList :cards="cards"></cardList>
+            <cardList :cards="chunkedCards"></cardList>
 
             <!-- Pagination -->
             <div v-if="pageCount > 1">
                 <hr>
-                <pagination :links="pagination.link" :pageCount="pageCount"></pagination>
+                <pagination :page="pagination.page" :pageCount="pageCount" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
             </div>
         </div>
     </div>
@@ -112,6 +112,7 @@
 import queryString from 'query-string'
 import Pagination from '../components/Pagination.vue'
 import CardList from '../components/CardList.vue'
+import _ from 'lodash'
 
 export default {
     data () {
@@ -126,6 +127,7 @@ export default {
             loading: false,
             error: false,
             pagination: {
+                page: 1,
                 pageSize: 32,
                 totalResults: 0,
                 link: ''
@@ -141,17 +143,24 @@ export default {
             params.types = this.type
             params.colors = this.colors.join(',')
             params.cmc = this.modifier + this.cmc
+            params.page = this.pagination.page
             params.pageSize = this.pagination.pageSize
 
             const stringified = queryString.stringify(params)
             return baseUrl + stringified
         },
+        chunkedCards () {
+            return _.chunk(this.cards, 4)
+        },
         pageCount () {
             return Math.ceil(this.pagination.totalResults / this.pagination.pageSize)
+        },
+        nextPageUri () {
+            return 'https://api.magicthegathering.io/v1/cards?cmc=0&colors=&name=&page=2&pageSize=32&types='
         }
     },
     methods: {
-        search () {
+        fetchPage (uri) {
             this.fetched = false
             this.loading = true
             this.noresults = false
@@ -159,7 +168,7 @@ export default {
 
             document.getElementById('quicksearchinput').blur()
 
-            this.$http.get(this.searchUrl).then((response) => {
+            this.$http.get(uri).then((response) => {
                 console.log('Success!')
                 this.loading = false
 
@@ -181,6 +190,15 @@ export default {
 
                 console.warn('Error:', error)
             })
+        },
+        paginate (direction) {
+            if (direction === 'next') {
+                this.pagination.page++
+                this.fetchPage(this.searchUrl)
+            } else {
+                this.pagination.page--
+                this.fetchPage(this.searchUrl)
+            }
         }
     },
     components: {

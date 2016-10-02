@@ -10,6 +10,7 @@ import './assets/css/font-awesome.min.css'
 // Initialize Vue Resource
 Vue.use(VueResource)
 
+// Init Vue
 new Vue({
     router,
     ...App

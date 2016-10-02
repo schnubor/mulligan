@@ -1,8 +1,10 @@
 <template lang="html">
-    <div class="row">
-        <div class="col-md-3" v-for="card in cards" :key="card.id" v-if="card.imageUrl">
-            <div class="card">
-                <img class="card-img" :src="card.imageUrl" :alt="card.name" width="100%"/>
+    <div class="">
+        <div class="row" v-for="group in cards">
+            <div class="col-md-3" v-for="card in group" :key="card.id" v-if="card.imageUrl">
+                <div class="card">
+                    <img class="card-img" :src="card.imageUrl" :alt="card.name" width="100%"/>
+                </div>
             </div>
         </div>
     </div>

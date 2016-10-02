@@ -1,13 +1,16 @@
 <template>
 <div>
+    <!-- Navigaton -->
     <nav class="navbar navbar-top navbar-light bg-faded">
         <div class="container" id="exCollapsingNavbar2">
             <router-link class="navbar-brand" to="/">Mulligan</router-link>
         </div>
     </nav>
 
+    <!-- Content -->
     <router-view ></router-view>
 
+    <!-- Footer -->
     <footer class="m-t-2">
         <div class="container">
             <span class="small pull-left">
@@ -20,16 +23,6 @@
     </footer>
 </div>
 </template>
-
-<script>
-export default {
-    data () {
-        return {
-            msg: 'Hello Vue!'
-        }
-    }
-}
-</script>
 
 <style>
 body {

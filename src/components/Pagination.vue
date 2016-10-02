@@ -1,8 +1,8 @@
 <template lang="html">
     <div class="pages row">
         <div class="col-md-12">
-            <button class="btn btn-sm btn-secondary" disabled><i class="fa fa-chevron-left"></i> Prev</button>
-            <button class="btn btn-sm btn-secondary">Next <i class="fa fa-chevron-right"></i></button>
+            <button class="btn btn-sm btn-secondary" @click="prevPage" :disabled="disablePrev"><i class="fa fa-chevron-left"></i> Prev</button>
+            <button class="btn btn-sm btn-secondary" @click="nextPage" :disabled="disableNext">Next <i class="fa fa-chevron-right"></i></button>
             <span>Page {{ currentPage }} of {{ pageCount }}</span>
         </div>
     </div>
@@ -10,24 +10,31 @@
 
 <script>
 export default {
-    props: ['pageCount', 'links'],
+    props: ['pageCount', 'page'],
     data () {
-        return {
-            currentPage: 1
-        }
+        return {}
     },
     computed: {
-        nextPageUri () {
-
+        currentPage () {
+            return this.page
         },
-        prevPageUri () {
-
+        disableNext () {
+            if (this.currentPage === this.pageCount) return true
+            return false
         },
-        lastPageUri () {
-
+        disablePrev () {
+            if (this.currentPage === 1) return true
+            return false
         }
     },
-    methods: {},
+    methods: {
+        nextPage () {
+            this.$emit('nextPage')
+        },
+        prevPage () {
+            this.$emit('prevPage')
+        }
+    },
     components: {}
 }
 </script>
