@@ -167,11 +167,12 @@ export default {
     },
     mounted () {
         if (!_.isEmpty(this.$route.query)) {
-            if (this.$route.query.name) this.name = this.$route.query.name
+            this.name = this.$route.query.name
             if (this.$route.query.colors) this.colors = this.$route.query.colors.split(',')
-            if (this.$route.query.cmc) this.cmc = this.$route.query.cmc
-            if (this.$route.query.modifier) this.modifier = this.$route.query.modifier
-            if (this.$route.query.page) this.pagination.page = this.$route.query.page
+            this.cmc = this.$route.query.cmc
+            this.modifier = this.$route.query.modifier
+            this.pagination.page = this.$route.query.page
+            console.log(this.pagination.page)
             this.search()
         }
     },
@@ -201,6 +202,7 @@ export default {
             })
         },
         newSearch () {
+            this.pagination.page = 1
             this.$router.push({path: '/', query: this.searchRouteParams})
             this.search()
         },
@@ -209,7 +211,6 @@ export default {
             this.loading = true
             this.noresults = false
             this.cards = []
-            this.pagination.page = 1
 
             document.getElementById('quicksearchinput').blur()
 
@@ -218,9 +219,11 @@ export default {
         paginate (direction) {
             if (direction === 'next') {
                 this.pagination.page++
+                this.$router.push({path: '/', query: this.searchRouteParams})
                 this.fetchPage(this.searchUrl)
             } else {
                 this.pagination.page--
+                this.$router.push({path: '/', query: this.searchRouteParams})
                 this.fetchPage(this.searchUrl)
             }
         }
