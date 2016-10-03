@@ -57,8 +57,6 @@
                                 </div>
                             </div>
                         </div>
-
-
                     </div>
                     <div class="row m-t-2 text-xs-center">
                         <button type="submit" class="btn btn-lg btn-outline-secondary" @click.stop.prevent="newSearch"><i class="fa fa-search"></i> Find Cards</button>
@@ -120,7 +118,6 @@ export default {
             cmc: 0,
             modifier: 'gte',
             name: '',
-            type: '',
             colors: [],
             cards: [],
             fetched: false,
@@ -141,7 +138,6 @@ export default {
             let params = {}
 
             params.name = this.name
-            params.types = this.type
             params.colors = this.colors.join(',')
             params.cmc = this.modifier + this.cmc
             params.page = this.pagination.page
@@ -150,11 +146,33 @@ export default {
             const stringified = queryString.stringify(params)
             return baseUrl + stringified
         },
+        searchRouteParams () {
+            let params = {}
+
+            params.name = this.name
+            params.colors = this.colors.join(',')
+            params.cmc = this.cmc
+            params.modifier = this.modifier
+            params.page = this.pagination.page
+            params.pageSize = this.pagination.pageSize
+
+            return params
+        },
         chunkedCards () {
             return _.chunk(this.cards, 4)
         },
         pageCount () {
             return Math.ceil(this.pagination.totalResults / this.pagination.pageSize)
+        }
+    },
+    mounted () {
+        if (!_.isEmpty(this.$route.query)) {
+            if (this.$route.query.name) this.name = this.$route.query.name
+            if (this.$route.query.colors) this.colors = this.$route.query.colors.split(',')
+            if (this.$route.query.cmc) this.cmc = this.$route.query.cmc
+            if (this.$route.query.modifier) this.modifier = this.$route.query.modifier
+            if (this.$route.query.page) this.pagination.page = this.$route.query.page
+            this.search()
         }
     },
     methods: {
@@ -183,6 +201,10 @@ export default {
             })
         },
         newSearch () {
+            this.$router.push({path: '/', query: this.searchRouteParams})
+            this.search()
+        },
+        search () {
             this.fetched = false
             this.loading = true
             this.noresults = false
