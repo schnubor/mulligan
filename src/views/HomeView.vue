@@ -39,19 +39,19 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <label class="form-check-inline">
-                                            <input class="form-check-input" type="checkbox" value="red" v-model="colors"> <span class="red circle"></span>
+                                            <input class="form-check-input" type="checkbox" value="red" v-model="colors"> <span class="red circle"><i class="ms ms-r"></i></span>
                                         </label>
                                         <label class="form-check-inline">
-                                            <input class="form-check-input" type="checkbox" value="blue" v-model="colors"> <span class="circle blue"></span>
+                                            <input class="form-check-input" type="checkbox" value="blue" v-model="colors"> <span class="circle blue"><i class="ms ms-u"></i></span>
                                         </label>
                                         <label class="form-check-inline">
-                                            <input class="form-check-input" type="checkbox" value="white" v-model="colors"> <span class="circle white"></span>
+                                            <input class="form-check-input" type="checkbox" value="white" v-model="colors"> <span class="circle white"><i class="ms ms-w"></i></span>
                                         </label>
                                         <label class="form-check-inline">
-                                            <input class="form-check-input" type="checkbox" value="green" v-model="colors"> <span class="circle green"></span>
+                                            <input class="form-check-input" type="checkbox" value="green" v-model="colors"> <span class="circle green"><i class="ms ms-g"></i></span>
                                         </label>
                                         <label class="form-check-inline">
-                                            <input class="form-check-input" type="checkbox" value="black" v-model="colors"> <span class="circle black"></span>
+                                            <input class="form-check-input" type="checkbox" value="black" v-model="colors"> <span class="circle black"><i class="ms ms-b"></i></span>
                                         </label>
                                     </div>
                                 </div>
@@ -202,7 +202,12 @@ export default {
             })
         },
         newSearch () {
+            // reset pagination and results
             this.pagination.page = 1
+            this.cards = []
+            document.getElementById('quicksearchinput').blur()
+
+            // push URL to history
             this.$router.push({path: '/', query: this.searchRouteParams})
             this.search()
         },
@@ -210,9 +215,6 @@ export default {
             this.fetched = false
             this.loading = true
             this.noresults = false
-            this.cards = []
-
-            document.getElementById('quicksearchinput').blur()
 
             this.fetchPage(this.searchUrl)
         },
@@ -278,6 +280,11 @@ export default {
         display: inline-block;
         border: 2px solid white;
         margin-top: 2px;
+        line-height: 13px;
+        padding-left: 2px;
+        font-size: 12px;
+        text-align: center;
+        vertical-align: top;
     }
 
     .btn.btn-outline-secondary {
