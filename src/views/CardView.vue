@@ -3,7 +3,7 @@
         <div class="container">
             <div class="row p-t-2">
                 <div class="col-md-3">
-                    <img :src="card.imageUrl" :alt="card.name" />
+                    <img :src="card.imageUrl" :alt="card.name" :class="borderColor" />
                     <small class="artist" v-if="card.artist">Artist: {{ card.artist }}</small>
                 </div>
                 <div class="col-md-9">
@@ -63,6 +63,14 @@ export default {
             } else {
                 return ''
             }
+        },
+        borderColor () {
+            switch (this.card.rarity) {
+            case 'Mythic Rare': return 'mythic'
+            case 'Rare': return 'rare'
+            case 'Uncommon': return 'uncommon'
+            default: return 'common'
+            }
         }
     },
     methods: {
@@ -119,6 +127,11 @@ export default {
         border-radius: 20px;
         width: 100%;
     }
+
+    .common { background-color: #eaeaea; }
+    .uncommon { background-color: #C4C8CC; }
+    .rare { background-color: #E0C596; }
+    .mythic { background-color: #E09475; }
 
     em {
         font-family: serif;

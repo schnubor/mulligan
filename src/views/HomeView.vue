@@ -13,7 +13,10 @@
                         <div class="col-sm-4">
                             <label>Mana costs:</label>
                         </div>
-                        <div class="col-sm-4 offset-sm-4">
+                        <div class="col-sm-2 offset-sm-1">
+                            <label>Set:</label>
+                        </div>
+                        <div class="col-sm-4 offset-sm-1">
                             <label for="">Color:</label>
                         </div>
                     </div>
@@ -35,7 +38,17 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4 offset-sm-4 qswrapper">
+                            <div class="col-md-2 offset-sm-1 qswrapper">
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <select class="form-control form-control-sm" v-model="set">
+                                            <option value="">None specific</option>
+                                            <option :value="set.code" v-for="set in setsReverted">{{ set.name }}</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 offset-sm-1 qswrapper">
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <label class="form-check-inline">
@@ -118,8 +131,10 @@ export default {
             cmc: 0,
             modifier: 'gte',
             name: '',
+            set: '',
             colors: [],
             cards: [],
+            sets: [],
             fetched: false,
             loading: false,
             error: false,
@@ -138,6 +153,7 @@ export default {
             let params = {}
 
             params.name = this.name
+            params.set = this.set
             params.colors = this.colors.join(',')
             params.cmc = this.modifier + this.cmc
             params.page = this.pagination.page
@@ -150,6 +166,7 @@ export default {
             let params = {}
 
             params.name = this.name
+            params.set = this.set
             params.colors = this.colors.join(',')
             params.cmc = this.cmc
             params.modifier = this.modifier
@@ -163,16 +180,23 @@ export default {
         },
         pageCount () {
             return Math.ceil(this.pagination.totalResults / this.pagination.pageSize)
+        },
+        setsReverted () {
+            return this.sets.reverse()
         }
     },
     mounted () {
+        // Fetch all the sets
+        this.fetchSets()
+
+        // Set Filters according to URL
         if (!_.isEmpty(this.$route.query)) {
             this.name = this.$route.query.name
+            this.set = this.$route.query.set
             if (this.$route.query.colors) this.colors = this.$route.query.colors.split(',')
             this.cmc = this.$route.query.cmc
             this.modifier = this.$route.query.modifier
             this.pagination.page = this.$route.query.page
-            console.log(this.pagination.page)
             this.search()
         }
     },
@@ -228,6 +252,15 @@ export default {
                 this.$router.push({path: '/', query: this.searchRouteParams})
                 this.fetchPage(this.searchUrl)
             }
+        },
+        fetchSets () {
+            this.$http.get('https://api.magicthegathering.io/v1/sets').then((response) => {
+                // Fill sets
+                this.sets = response.body.sets
+                if (this.$route.query.set) this.set = this.$route.query.set
+            }, (error) => {
+                console.warn(error)
+            })
         }
     },
     components: {
