@@ -11,9 +11,7 @@
                         {{ card.name }} <br>
                         <small v-if="card.type">{{ card.type }}</small>
                     </h2>
-                    <p class="lead m-t-2" v-if="card.text">
-                        {{ card.text }} <br>
-                    </p>
+                    <p class="lead m-t-2" v-if="card.text" v-html="rawText"></p>
                     <em v-if="card.flavor">"{{ cleanFlavor }}"</em>
 
                     <p class="h4 m-t-2" v-if="card.power && card.toughness">
@@ -71,6 +69,9 @@ export default {
             case 'Uncommon': return 'uncommon'
             default: return 'common'
             }
+        },
+        rawText () {
+            return this.card.text.replace(/\n/g, '<br />')
         }
     },
     methods: {
