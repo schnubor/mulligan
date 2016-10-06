@@ -6,7 +6,7 @@
                 <form>
                     <div class="row quicksearch">
                         <div class="col-sm-12">
-                            <input id="quicksearchinput" class="form-control-lg form-control" placeholder="Card name" v-model="name">
+                            <input id="quicksearchinput" class="form-control-lg form-control" placeholder="Card name (optional)" v-model="name">
                         </div>
                     </div>
                     <div class="row m-t-1 labels">
