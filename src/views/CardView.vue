@@ -79,6 +79,9 @@ export default {
             text = text.replace(/\{G\}/g, '<i class="ms ms-g ms-cost"></i>')
             text = text.replace(/\{W\}/g, '<i class="ms ms-w ms-cost"></i>')
             text = text.replace(/\{B\}/g, '<i class="ms ms-b ms-cost"></i>')
+            text = text.replace(/\{C\}/g, '<i class="ms ms-c ms-cost"></i>')
+            text = text.replace(/\{S\}/g, '<i class="ms ms-s ms-cost"></i>')
+            text = text.replace(/\{B\/P\}/g, '<i class="ms ms-p ms-cost"></i>')
             text = text.replace(/\{E\}/g, '<i class="ms ms-e"></i>')
             text = text.replace(/\{(\d)\}/g, '<i class="ms ms-$1 ms-cost"></i>')
             return text
