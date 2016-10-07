@@ -42,7 +42,7 @@
                                 <div class="row">
                                     <div class="col-sm-12">
                                         <select class="form-control form-control-sm" v-model="set">
-                                            <option value="">None specific</option>
+                                            <option value="">No specific set</option>
                                             <option :value="set.code" v-for="set in setsReverted">{{ set.name }}</option>
                                         </select>
                                     </div>
@@ -275,6 +275,7 @@ export default {
         background-image: url('../assets/images/bg1.jpg');
         background-repeat: no-repeat;
         background-size: cover;
+        background-position-x: center;
         border-radius: 0;
     }
 
@@ -365,4 +366,14 @@ export default {
     .circle.white { background-color: rgb(241, 228, 181); }
     .circle.green { background-color: rgb(82, 161, 92); }
     .circle.black { background-color: rgb(57, 60, 62); }
+
+    @media screen and (max-width: 544px) {
+        .labels {
+            display: none;
+        }
+
+        #quicksearchinput {
+            margin-bottom: 15px;
+        }
+    }
 </style>
