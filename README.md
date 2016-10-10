@@ -4,7 +4,7 @@
 
 > A Vue.js project
 
-Website for Magic: The Gathering card search and deck building.
+Little website for Magic: The Gathering card search and deck building.
 Thanks to [Andrew Backes](https://github.com/adback03) for building [https://magicthegathering.io/](https://magicthegathering.io/)
 
 ## Build Setup

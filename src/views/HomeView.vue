@@ -72,7 +72,7 @@
                         </div>
                     </div>
                     <div class="row m-t-2 text-xs-center">
-                        <button type="submit" class="btn btn-lg btn-outline-secondary" @click.stop.prevent="newSearch"><i class="fa fa-search"></i> Find Cards</button>
+                        <button type="submit" class="btn btn-lg btn-outline-secondary" @click.stop.prevent="triggerNewSearch"><i class="fa fa-search"></i> Find Cards</button>
                     </div>
                 </form>
             </div>
@@ -102,8 +102,8 @@
         <!-- Cards -->
         <div class="container" v-if="fetched" key="fetched">
             <!-- Pagination -->
-            <div v-if="pageCount > 1">
-                <pagination :page="pagination.page" :pageCount="pageCount" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
+            <div v-if="totalPages > 1">
+                <pagination :page="pagination.currentPage" :pageCount="totalPages" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
                 <hr>
             </div>
 
@@ -111,9 +111,9 @@
             <cardList :cards="chunkedPage"></cardList>
 
             <!-- Pagination -->
-            <div v-if="pageCount > 1">
+            <div v-if="totalPages > 1">
                 <hr>
-                <pagination :page="pagination.page" :pageCount="pageCount" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
+                <pagination :page="pagination.currentPage" :pageCount="totalPages" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
             </div>
         </div>
     </div>
@@ -141,26 +141,11 @@ export default {
             noresults: false,
             pagination: {
                 currentPage: 1,
-                pageSize: 32,
-                totalPages: 0
+                pageSize: 32
             }
         }
     },
     computed: {
-        searchUrl () {
-            let baseUrl = 'https://api.magicthegathering.io/v1/cards?'
-            let params = {}
-
-            params.name = this.name
-            params.set = this.set
-            params.colors = this.colors.join(',')
-            params.cmc = this.modifier + this.cmc
-            params.page = this.pagination.page
-            params.pageSize = this.pagination.pageSize
-
-            const stringified = queryString.stringify(params)
-            return baseUrl + stringified
-        },
         searchRouteParams () {
             let params = {}
 
@@ -169,8 +154,6 @@ export default {
             params.colors = this.colors.join(',')
             params.cmc = this.cmc
             params.modifier = this.modifier
-            params.page = this.pagination.page
-            params.pageSize = this.pagination.pageSize
 
             return params
         },
@@ -180,21 +163,21 @@ export default {
         cardPage () {
             let resultCount = this.cards.length
             let index = 0
+            let pageStart = 0
 
-            if (resultCount != 0) {
-                this.pagination.currentPage = this.totalPages - 1 if this.pagination.currentPage >= this.totalPages
+            if (resultCount !== 0) {
+                if (this.pagination.currentPage >= this.totalPages) {
+                    pageStart = this.totalPages - 1
+                }
             } else {
-                this.pagination.currentPage = 0
+                pageStart = 0
             }
 
-            index = this.pagination.currentPage * this.pagination.pageSize
+            index = pageStart * this.pagination.pageSize
             return this.cards.slice(index, index + this.pagination.pageSize)
         },
         chunkedPage () {
-            return _.chunk(this.paginatedCards, 4)
-        },
-        pageCount () {
-            return Math.ceil(this.pagination.totalResults / this.pagination.pageSize)
+            return _.chunk(this.cardPage, 4)
         },
         setsReverted () {
             return this.sets.reverse()
@@ -204,32 +187,55 @@ export default {
         // Fetch all the sets
         this.fetchSets()
 
-        // Set Filters according to URL
+        // Set Filters according to URL and trigger search
         if (!_.isEmpty(this.$route.query)) {
             this.name = this.$route.query.name
             this.set = this.$route.query.set
             if (this.$route.query.colors) this.colors = this.$route.query.colors.split(',')
             this.cmc = this.$route.query.cmc
             this.modifier = this.$route.query.modifier
-            this.pagination.page = this.$route.query.page
+            // trigger initial search
             this.search()
         }
     },
     methods: {
-        fetchPage (uri) {
-            this.cards = []
+        fetchPage (page) {
+            let baseUrl = 'https://api.magicthegathering.io/v1/cards?'
+            let params = {}
 
-            this.$http.get(uri).then((response) => {
-                this.loading = false
+            if (this.name) params.name = this.name
+            if (this.set) params.set = this.set
+            if (this.colors.length) params.colors = this.colors.join(',')
+            params.cmc = this.modifier + this.cmc
+            params.pageSize = this.pagination.pageSize
+            params.page = page
 
-                // Show cards
+            let searchUri = baseUrl + queryString.stringify(params)
+
+            this.$http.get(searchUri).then((response) => {
+                // Get total count
+                let total = response.headers.get('Total-Count')
+                let totalPages = Math.ceil(total / this.pagination.pageSize)
+                console.log(totalPages)
+
+                // Fill cards
                 if (response.body.cards.length) {
                     for (let card of response.body.cards) {
                         if (card.imageUrl) this.cards.push(card)
                     }
-                    this.fetched = true
                 } else {
                     this.noresults = true
+                }
+
+                console.log(page)
+
+                // Fetch next page if necessary
+                if (page < totalPages) {
+                    page++
+                    this.fetchPage(page)
+                } else {
+                    this.fetched = true
+                    this.loading = false
                 }
             }, (error) => {
                 this.loading = false
@@ -237,7 +243,7 @@ export default {
                 console.warn(error)
             })
         },
-        newSearch () {
+        triggerNewSearch () {
             // reset pagination and results
             this.pagination.currentPage = 1
             this.cards = []
@@ -252,19 +258,16 @@ export default {
             this.loading = true
             this.noresults = false
 
-            this.fetchPage(this.searchUrl)
+            this.fetchPage(1)
         },
         paginate (direction) {
             if (direction === 'next') {
-                this.pagination.page++
-                this.$router.push({path: '/', query: this.searchRouteParams})
-                this.fetchPage(this.searchUrl)
+                this.pagination.currentPage++
             } else {
-                this.pagination.page--
-                this.$router.push({path: '/', query: this.searchRouteParams})
-                this.fetchPage(this.searchUrl)
+                this.pagination.currentPage--
             }
         },
+        // Fetch all sets
         fetchSets () {
             this.$http.get('https://api.magicthegathering.io/v1/sets').then((response) => {
                 // Fill sets
