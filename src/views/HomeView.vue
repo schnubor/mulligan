@@ -108,7 +108,7 @@
             </div>
 
             <!-- Card list -->
-            <cardList :cards="chunkedCards"></cardList>
+            <cardList :cards="chunkedPage"></cardList>
 
             <!-- Pagination -->
             <div v-if="pageCount > 1">
@@ -140,10 +140,9 @@ export default {
             error: false,
             noresults: false,
             pagination: {
-                page: 1,
+                currentPage: 1,
                 pageSize: 32,
-                totalResults: 0,
-                link: ''
+                totalPages: 0
             }
         }
     },
@@ -175,8 +174,24 @@ export default {
 
             return params
         },
-        chunkedCards () {
-            return _.chunk(this.cards, 4)
+        totalPages () {
+            return Math.ceil(this.cards.length / this.pagination.pageSize)
+        },
+        cardPage () {
+            let resultCount = this.cards.length
+            let index = 0
+
+            if (resultCount != 0) {
+                this.pagination.currentPage = this.totalPages - 1 if this.pagination.currentPage >= this.totalPages
+            } else {
+                this.pagination.currentPage = 0
+            }
+
+            index = this.pagination.currentPage * this.pagination.pageSize
+            return this.cards.slice(index, index + this.pagination.pageSize)
+        },
+        chunkedPage () {
+            return _.chunk(this.paginatedCards, 4)
         },
         pageCount () {
             return Math.ceil(this.pagination.totalResults / this.pagination.pageSize)
@@ -207,9 +222,6 @@ export default {
             this.$http.get(uri).then((response) => {
                 this.loading = false
 
-                // Pagination
-                this.pagination.link = response.headers.get('link')
-                this.pagination.totalResults = response.headers.get('total-count')
                 // Show cards
                 if (response.body.cards.length) {
                     for (let card of response.body.cards) {
@@ -227,7 +239,7 @@ export default {
         },
         newSearch () {
             // reset pagination and results
-            this.pagination.page = 1
+            this.pagination.currentPage = 1
             this.cards = []
             document.getElementById('quicksearchinput').blur()
 
