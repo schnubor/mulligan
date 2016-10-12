@@ -80,7 +80,8 @@
 
         <!-- Loading -->
         <div class="container" v-if="!fetched && !error && !noresults && !toomanyresults" key="loading">
-            <h1 class="text-xs-center">{{ loading ? "Loading ..." : "Search. Build. Play." }}</h1>
+            <h1 class="text-xs-center" v-if="!loading">Search. Build. Play.</h1>
+            <spinner v-if="loading"></spinner>
         </div>
 
         <!-- Error -->
@@ -134,6 +135,7 @@
 import queryString from 'query-string'
 import Pagination from '../components/Pagination.vue'
 import CardList from '../components/CardList.vue'
+import Spinner from '../components/Spinner.vue'
 import _ from 'lodash'
 
 export default {
@@ -301,7 +303,8 @@ export default {
     },
     components: {
         cardList: CardList,
-        pagination: Pagination
+        pagination: Pagination,
+        spinner: Spinner
     }
 }
 </script>
