@@ -1,8 +1,10 @@
 <template lang="html">
     <div class="card" :class="borderColor">
-        <router-link :to="{ name: 'card', params: { id: card.multiverseid }}">
-            <img class="card-img" :src="card.imageUrl" :alt="card.name" width="100%"/>
-        </router-link>
+        <div class="cardcontent">
+            <router-link :to="{ name: 'card', params: { id: card.multiverseid }}">
+                <img class="card-img" :src="card.imageUrl" :alt="card.name" width="100%"/>
+            </router-link>
+        </div>
     </div>
 </template>
 
@@ -30,6 +32,21 @@ export default {
         border: 6px solid rgba(0,0,0,0);
         border-radius: 20px;
         overflow: hidden;
+    }
+
+    .card:before {
+        display: block;
+        content: "";
+        width: 100%;
+        padding-top: 139.6825%;
+    }
+
+    .card > .cardcontent {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
     }
 
     .common { background-color: #2F2F2F; }

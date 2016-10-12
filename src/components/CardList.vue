@@ -1,5 +1,5 @@
 <template lang="html">
-    <div class="">
+    <div>
         <div class="row" v-for="group in cards">
             <div class="col-md-3" v-for="card in group" :key="card.id" v-if="card.imageUrl">
                 <card :card="card" :rarity="card.rarity"></card>

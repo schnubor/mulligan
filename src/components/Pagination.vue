@@ -19,11 +19,11 @@ export default {
             return this.page
         },
         disableNext () {
-            if (this.currentPage === this.pageCount) return true
+            if (this.page === this.pageCount) return true
             return false
         },
         disablePrev () {
-            if (this.currentPage === 1) return true
+            if (this.page === 1) return true
             return false
         }
     },

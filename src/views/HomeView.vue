@@ -79,7 +79,7 @@
         </div>
 
         <!-- Loading -->
-        <div class="container" v-if="!fetched && !error && !noresults" key="loading">
+        <div class="container" v-if="!fetched && !error && !noresults && !toomanyresults" key="loading">
             <h1 class="text-xs-center">{{ loading ? "Loading ..." : "Search. Build. Play." }}</h1>
         </div>
 
@@ -96,6 +96,17 @@
             <h1 class="error text-xs-center">
                 ಠ_ಠ <br>
                 <small>No results.</small>
+            </h1>
+        </div>
+
+        <!-- Too many results -->
+        <div class="container" v-if="toomanyresults" key="noresults">
+            <h1 class="error text-xs-center">
+                (づ￣ ³￣)づ <br><br>
+                <small>
+                    Found 1000+ cards. <br>
+                    Try adjusting the filters.
+                </small>
             </h1>
         </div>
 
@@ -139,6 +150,7 @@ export default {
             loading: false,
             error: false,
             noresults: false,
+            toomanyresults: false,
             pagination: {
                 currentPage: 1,
                 pageSize: 32
@@ -154,6 +166,7 @@ export default {
             params.colors = this.colors.join(',')
             params.cmc = this.cmc
             params.modifier = this.modifier
+            params.page = this.pagination.currentPage
 
             return params
         },
@@ -163,17 +176,17 @@ export default {
         cardPage () {
             let resultCount = this.cards.length
             let index = 0
-            let pageStart = 0
+            let currentPage = this.pagination.currentPage - 1
 
             if (resultCount !== 0) {
                 if (this.pagination.currentPage >= this.totalPages) {
-                    pageStart = this.totalPages - 1
+                    currentPage = this.totalPages - 1
                 }
             } else {
-                pageStart = 0
+                currentPage = 0
             }
 
-            index = pageStart * this.pagination.pageSize
+            index = currentPage * this.pagination.pageSize
             return this.cards.slice(index, index + this.pagination.pageSize)
         },
         chunkedPage () {
@@ -186,17 +199,6 @@ export default {
     mounted () {
         // Fetch all the sets
         this.fetchSets()
-
-        // Set Filters according to URL and trigger search
-        if (!_.isEmpty(this.$route.query)) {
-            this.name = this.$route.query.name
-            this.set = this.$route.query.set
-            if (this.$route.query.colors) this.colors = this.$route.query.colors.split(',')
-            this.cmc = this.$route.query.cmc
-            this.modifier = this.$route.query.modifier
-            // trigger initial search
-            this.search()
-        }
     },
     methods: {
         fetchPage (page) {
@@ -216,25 +218,28 @@ export default {
                 // Get total count
                 let total = response.headers.get('Total-Count')
                 let totalPages = Math.ceil(total / this.pagination.pageSize)
-                console.log(totalPages)
 
-                // Fill cards
-                if (response.body.cards.length) {
-                    for (let card of response.body.cards) {
-                        if (card.imageUrl) this.cards.push(card)
+                // Check for
+                if (total < 1000) {
+                    // Fill cards
+                    if (response.body.cards.length) {
+                        for (let card of response.body.cards) {
+                            if (card.imageUrl) this.cards.push(card)
+                        }
+                    } else {
+                        this.noresults = true
+                    }
+
+                    // Fetch next page if necessary
+                    if (page < totalPages) {
+                        page++
+                        this.fetchPage(page)
+                    } else {
+                        this.fetched = true
+                        this.loading = false
                     }
                 } else {
-                    this.noresults = true
-                }
-
-                console.log(page)
-
-                // Fetch next page if necessary
-                if (page < totalPages) {
-                    page++
-                    this.fetchPage(page)
-                } else {
-                    this.fetched = true
+                    this.toomanyresults = true
                     this.loading = false
                 }
             }, (error) => {
@@ -249,11 +254,12 @@ export default {
             this.cards = []
             document.getElementById('quicksearchinput').blur()
 
-            // push URL to history
+            // push URL to browser history
             this.$router.push({path: '/', query: this.searchRouteParams})
             this.search()
         },
         search () {
+            this.toomanyresults = false
             this.fetched = false
             this.loading = true
             this.noresults = false
@@ -263,9 +269,12 @@ export default {
         paginate (direction) {
             if (direction === 'next') {
                 this.pagination.currentPage++
+                this.$router.push({path: '/', query: this.searchRouteParams})
             } else {
                 this.pagination.currentPage--
             }
+            // Update url
+            this.$router.push({path: '/', query: this.searchRouteParams})
         },
         // Fetch all sets
         fetchSets () {
@@ -273,6 +282,18 @@ export default {
                 // Fill sets
                 this.sets = response.body.sets
                 if (this.$route.query.set) this.set = this.$route.query.set
+
+                // Set Filters according to URL and trigger search
+                if (!_.isEmpty(this.$route.query)) {
+                    this.name = this.$route.query.name
+                    this.set = this.$route.query.set
+                    if (this.$route.query.colors) this.colors = this.$route.query.colors.split(',')
+                    this.cmc = this.$route.query.cmc
+                    this.modifier = this.$route.query.modifier
+                    this.pagination.currentPage = parseInt(this.$route.query.page)
+                    // trigger initial search
+                    this.search()
+                }
             }, (error) => {
                 console.warn(error)
             })
@@ -314,6 +335,8 @@ export default {
     h1 small {
         text-transform: none;
         font-size: 12px;
+        display: inline-block;
+        line-height: 18px;
     }
 
     label {
