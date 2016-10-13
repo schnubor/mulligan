@@ -34,6 +34,8 @@
                     </div>
                     <hr>
                     <small>Set: {{ card.setName }}, Multiverse ID: {{ card.multiverseid }}</small>
+                    <hr>
+                    <a :href="buyLinks" class="btn btn-outline-warning" target="_blank"><i class="fa fa-shopping-cart"></i> Buy online</a>
                 </div>
             </div>
         </div>
@@ -55,6 +57,9 @@ export default {
         this.fetchCard()
     },
     computed: {
+        buyLinks () {
+            return 'https://www.magiccardmarket.eu/Products/Singles/' + this.card.setName + '/' + this.card.name
+        },
         cleanFlavor () {
             if (this.card.flavor) {
                 return this.card.flavor.replace(/["]+/g, '')
