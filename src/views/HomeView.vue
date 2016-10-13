@@ -10,8 +10,8 @@
                         </div>
                     </div>
                     <div class="row m-t-1 labels">
-                        <div class="col-sm-4">
-                            <label>Mana costs:</label>
+                        <div class="col-sm-2">
+                            <label>Type:</label>
                         </div>
                         <div class="col-sm-2 offset-sm-1">
                             <label>Set:</label>
@@ -22,19 +22,19 @@
                     </div>
                     <div class="row p-b-2">
                         <div class="col-md-12">
-                            <div class="col-md-4 qswrapper">
+                            <div class="col-md-2 qswrapper">
                                 <div class="row">
-                                    <div class="col-sm-6">
-                                        <select class="form-control form-control-sm " v-model="modifier">
-                                            <option value="">equal</option>
-                                            <option value="gt">greater</option>
-                                            <option value="gte">greater or equal</option>
-                                            <option value="lt">lesser</option>
-                                            <option value="lte">lesser or equal</option>
+                                    <div class="col-sm-12">
+                                        <select class="form-control form-control-sm " v-model="type">
+                                            <option value="">no specific type</option>
+                                            <option value="instant">Instant</option>
+                                            <option value="sorcery">Sorcery</option>
+                                            <option value="artifact">Artifact</option>
+                                            <option value="creature">Creature</option>
+                                            <option value="enchantment">Enchantment</option>
+                                            <option value="land">Land</option>
+                                            <option value="planeswalker">Planeswalker</option>
                                         </select>
-                                    </div>
-                                    <div class="col-sm-6">
-                                        <input class="form-control-sm form-control" v-model="cmc" style="margin-top: 1px;">
                                     </div>
                                 </div>
                             </div>
@@ -113,11 +113,23 @@
 
         <!-- Cards -->
         <div class="container" v-if="fetched" key="fetched">
-            <!-- Pagination -->
-            <div v-if="totalPages > 1">
-                <pagination :page="pagination.currentPage" :pageCount="totalPages" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
-                <hr>
+            <!-- Filter -->
+            <div class="row">
+                <div class="col-md-3 form-inline">
+                    <span>Sort by</span>
+                    <select class="form-control form-control-sm" v-model="sorting">
+                        <option value="">Color</option>
+                        <option value="types">Type</option>
+                        <option value="name">Name</option>
+                        <option value="rarity">Rarity</option>
+                        <option value="cmc">CMC</option>
+                    </select>
+                </div>
+                <div class="col-md-9">
+                    <pagination v-if="totalPages > 1" :page="pagination.currentPage" :pageCount="totalPages" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
+                </div>
             </div>
+            <hr>
 
             <!-- Card list -->
             <cardList :cards="chunkedPage"></cardList>
@@ -141,8 +153,7 @@ import _ from 'lodash'
 export default {
     data () {
         return {
-            cmc: 0,
-            modifier: 'gte',
+            type: '',
             name: '',
             set: '',
             colors: [],
@@ -153,6 +164,7 @@ export default {
             error: false,
             noresults: false,
             toomanyresults: false,
+            sorting: '',
             pagination: {
                 currentPage: 1,
                 pageSize: 32
@@ -160,14 +172,17 @@ export default {
         }
     },
     computed: {
+        sortedCards () {
+            if (this.sorting === '') return this.cards
+            return _.sortBy(this.cards, this.sorting)
+        },
         searchRouteParams () {
             let params = {}
 
-            params.name = this.name
-            params.set = this.set
-            params.colors = this.colors.join(',')
-            params.cmc = this.cmc
-            params.modifier = this.modifier
+            if (this.name) params.name = this.name
+            if (this.set) params.set = this.set
+            if (this.colors.length) params.colors = this.colors.join(',')
+            if (this.type) params.types = this.type
             params.page = this.pagination.currentPage
 
             return params
@@ -189,7 +204,7 @@ export default {
             }
 
             index = currentPage * this.pagination.pageSize
-            return this.cards.slice(index, index + this.pagination.pageSize)
+            return this.sortedCards.slice(index, index + this.pagination.pageSize)
         },
         chunkedPage () {
             return _.chunk(this.cardPage, 4)
@@ -209,8 +224,9 @@ export default {
 
             if (this.name) params.name = this.name
             if (this.set) params.set = this.set
-            if (this.colors.length) params.colors = this.colors.join(',')
-            params.cmc = this.modifier + this.cmc
+            if (this.type) params.types = this.type
+            if (this.colors.length && this.type !== 'land') params.colors = this.colors.join(',')
+
             params.pageSize = this.pagination.pageSize
             params.page = page
 
@@ -287,11 +303,10 @@ export default {
 
                 // Set Filters according to URL and trigger search
                 if (!_.isEmpty(this.$route.query)) {
-                    this.name = this.$route.query.name
-                    this.set = this.$route.query.set
+                    if (this.$route.query.name) this.name = this.$route.query.name
+                    if (this.$route.query.set) this.set = this.$route.query.set
                     if (this.$route.query.colors) this.colors = this.$route.query.colors.split(',')
-                    this.cmc = this.$route.query.cmc
-                    this.modifier = this.$route.query.modifier
+                    if (this.$route.query.type) this.type = this.$route.query.type
                     this.pagination.currentPage = parseInt(this.$route.query.page)
                     // trigger initial search
                     this.search()
@@ -385,13 +400,13 @@ export default {
         background-color: white;
     }
 
-    .jumbotron input, select {
+    .jumbotron input, .jumbotron select {
         font-weight: 200;
         opacity: 0.8;
         transition: .2s all;
     }
 
-    .jumbotron input:focus, select:focus {
+    .jumbotron input:focus, .jumbotron select:focus {
         border-color: #fff;
         opacity: 1;
     }

@@ -3,7 +3,7 @@
     <!-- Navigaton -->
     <nav class="navbar navbar-top navbar-light bg-faded">
         <div class="container" id="exCollapsingNavbar2">
-            <router-link class="navbar-brand" to="/"><i class="fa fa-retweet"></i> Mulligan</router-link>
+            <a class="navbar-brand" href="/"><i class="fa fa-retweet"></i> Mulligan</a>
         </div>
     </nav>
 

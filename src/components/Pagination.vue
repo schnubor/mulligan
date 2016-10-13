@@ -1,10 +1,8 @@
 <template lang="html">
-    <div class="pages row">
-        <div class="col-md-12">
-            <button class="btn btn-sm btn-secondary" @click="prevPage" :disabled="disablePrev"><i class="fa fa-chevron-left"></i> Prev</button>
-            <button class="btn btn-sm btn-secondary" @click="nextPage" :disabled="disableNext">Next <i class="fa fa-chevron-right"></i></button>
-            <span>Page {{ currentPage }} of {{ pageCount }}</span>
-        </div>
+    <div class="pages">
+        <span>Page {{ currentPage }} of {{ pageCount }}</span>
+        <button class="btn btn-sm btn-secondary" @click="prevPage" :disabled="disablePrev"><i class="fa fa-chevron-left"></i> Prev</button>
+        <button class="btn btn-sm btn-secondary" @click="nextPage" :disabled="disableNext">Next <i class="fa fa-chevron-right"></i></button>
     </div>
 </template>
 
@@ -40,6 +38,10 @@ export default {
 </script>
 
 <style lang="css" scoped>
+    .pages {
+        float: right;
+    }
+
     .pages span {
         padding-left: 10px;
     }
