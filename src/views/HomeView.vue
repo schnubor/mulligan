@@ -9,63 +9,60 @@
                             <input id="quicksearchinput" class="form-control-lg form-control" placeholder="Card name (optional)" v-model="name">
                         </div>
                     </div>
-                    <div class="row m-t-1 labels">
-                        <div class="col-sm-2">
-                            <label>Type:</label>
-                        </div>
-                        <div class="col-sm-2 offset-sm-1">
-                            <label>Set:</label>
-                        </div>
-                        <div class="col-sm-4 offset-sm-1">
-                            <label for="">Color:</label>
-                        </div>
-                    </div>
-                    <div class="row p-b-2">
-                        <div class="col-md-12">
-                            <div class="col-md-2 qswrapper">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <select class="form-control form-control-sm " v-model="type">
-                                            <option value="">no specific type</option>
-                                            <option value="instant">Instant</option>
-                                            <option value="sorcery">Sorcery</option>
-                                            <option value="artifact">Artifact</option>
-                                            <option value="creature">Creature</option>
-                                            <option value="enchantment">Enchantment</option>
-                                            <option value="land">Land</option>
-                                            <option value="planeswalker">Planeswalker</option>
-                                        </select>
+                    <div class="p-b-2">
+                        <div class="col-md-12 qswrapper">
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <select class="form-control form-control-sm" v-model="set">
+                                                <option value="">all sets</option>
+                                                <option :value="set.code" v-for="set in setsReverted">{{ set.name }}</option>
+                                            </select>
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="col-md-2 offset-sm-1 qswrapper">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <select class="form-control form-control-sm" v-model="set">
-                                            <option value="">No specific set</option>
-                                            <option :value="set.code" v-for="set in setsReverted">{{ set.name }}</option>
-                                        </select>
-                                    </div>
+                                <div class="col-md-2">
+                                    <select class="form-control form-control-sm " v-model="type">
+                                        <option value="">all types</option>
+                                        <option value="instant">Instant</option>
+                                        <option value="sorcery">Sorcery</option>
+                                        <option value="artifact">Artifact</option>
+                                        <option value="creature">Creature</option>
+                                        <option value="enchantment">Enchantment</option>
+                                        <option value="land">Land</option>
+                                        <option value="planeswalker">Planeswalker</option>
+                                    </select>
                                 </div>
-                            </div>
-                            <div class="col-md-4 offset-sm-1 qswrapper">
-                                <div class="row">
-                                    <div class="col-sm-12">
-                                        <label class="form-check-inline">
-                                            <input class="form-check-input" type="checkbox" value="red" v-model="colors"> <span class="red circle"><i class="ms ms-r"></i></span>
-                                        </label>
-                                        <label class="form-check-inline">
-                                            <input class="form-check-input" type="checkbox" value="blue" v-model="colors"> <span class="circle blue"><i class="ms ms-u"></i></span>
-                                        </label>
-                                        <label class="form-check-inline">
-                                            <input class="form-check-input" type="checkbox" value="white" v-model="colors"> <span class="circle white"><i class="ms ms-w"></i></span>
-                                        </label>
-                                        <label class="form-check-inline">
-                                            <input class="form-check-input" type="checkbox" value="green" v-model="colors"> <span class="circle green"><i class="ms ms-g"></i></span>
-                                        </label>
-                                        <label class="form-check-inline">
-                                            <input class="form-check-input" type="checkbox" value="black" v-model="colors"> <span class="circle black"><i class="ms ms-b"></i></span>
-                                        </label>
+
+                                <div class="col-md-2">
+                                    <select class="form-control form-control-sm " v-model="rarity">
+                                        <option value="">all rarities</option>
+                                        <option value="Mythic Rare">Mythic</option>
+                                        <option value="Rare">Rare</option>
+                                        <option value="Uncommon">Uncommon</option>
+                                        <option value="Common">Common</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="row">
+                                        <div class="col-sm-12">
+                                            <label class="form-check-inline">
+                                                <input class="form-check-input" type="checkbox" value="red" v-model="colors"> <span class="red circle"><i class="ms ms-r"></i></span>
+                                            </label>
+                                            <label class="form-check-inline">
+                                                <input class="form-check-input" type="checkbox" value="blue" v-model="colors"> <span class="circle blue"><i class="ms ms-u"></i></span>
+                                            </label>
+                                            <label class="form-check-inline">
+                                                <input class="form-check-input" type="checkbox" value="white" v-model="colors"> <span class="circle white"><i class="ms ms-w"></i></span>
+                                            </label>
+                                            <label class="form-check-inline">
+                                                <input class="form-check-input" type="checkbox" value="green" v-model="colors"> <span class="circle green"><i class="ms ms-g"></i></span>
+                                            </label>
+                                            <label class="form-check-inline">
+                                                <input class="form-check-input" type="checkbox" value="black" v-model="colors"> <span class="circle black"><i class="ms ms-b"></i></span>
+                                            </label>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -118,12 +115,10 @@
                 <div class="col-md-3 form-inline">
                     <span>Sort by</span>
                     <select class="form-control form-control-sm" v-model="sorting">
-                        <option value="">Color</option>
-                        <option value="types">Type</option>
                         <option value="name">Name</option>
-                        <option value="rarity">Rarity</option>
                         <option value="cmc">CMC</option>
                     </select>
+                    <button class="btn btn-sm btn-secondary" @click="order *= -1"><i class="fa fa-arrows-v"></i> Reverse</button>
                 </div>
                 <div class="col-md-9">
                     <pagination v-if="totalPages > 1" :page="pagination.currentPage" :pageCount="totalPages" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
@@ -156,6 +151,7 @@ export default {
             type: '',
             name: '',
             set: '',
+            rarity: '',
             colors: [],
             cards: [],
             sets: [],
@@ -164,7 +160,8 @@ export default {
             error: false,
             noresults: false,
             toomanyresults: false,
-            sorting: '',
+            sorting: 'name',
+            order: 1,
             pagination: {
                 currentPage: 1,
                 pageSize: 32
@@ -173,8 +170,11 @@ export default {
     },
     computed: {
         sortedCards () {
-            if (this.sorting === '') return this.cards
-            return _.sortBy(this.cards, this.sorting)
+            if (this.order === 1) {
+                return _.sortBy(this.cards, this.sorting)
+            } else {
+                return _.sortBy(this.cards, this.sorting).reverse()
+            }
         },
         searchRouteParams () {
             let params = {}
@@ -183,6 +183,7 @@ export default {
             if (this.set) params.set = this.set
             if (this.colors.length) params.colors = this.colors.join(',')
             if (this.type) params.types = this.type
+            if (this.rarity) params.rarity = this.rarity
             params.page = this.pagination.currentPage
 
             return params
@@ -225,6 +226,7 @@ export default {
             if (this.name) params.name = this.name
             if (this.set) params.set = this.set
             if (this.type) params.types = this.type
+            if (this.rarity) params.rarity = this.rarity
             if (this.colors.length && this.type !== 'land') params.colors = this.colors.join(',')
 
             params.pageSize = this.pagination.pageSize
@@ -307,6 +309,7 @@ export default {
                     if (this.$route.query.set) this.set = this.$route.query.set
                     if (this.$route.query.colors) this.colors = this.$route.query.colors.split(',')
                     if (this.$route.query.type) this.type = this.$route.query.type
+                    if (this.$route.query.rarity) this.rarity = this.$route.query.rarity
                     this.pagination.currentPage = parseInt(this.$route.query.page)
                     // trigger initial search
                     this.search()
@@ -331,6 +334,7 @@ export default {
         background-size: cover;
         background-position-x: center;
         border-radius: 0;
+        padding: 2rem 0;
     }
 
     .jumbotron .lead {
@@ -415,6 +419,7 @@ export default {
         background-color: rgba(20, 20, 20, 0.7);
         padding: 15px;
         border-radius: 0.25rem;
+        float: none;
     }
 
     .circle.red { background-color: rgb(221, 77, 77); }
