@@ -1,7 +1,8 @@
 <template lang="html">
     <div class="bg">
         <div class="container">
-            <div class="row p-t-2">
+            <spinner v-if="loading"></spinner>
+            <div v-if="!loading" class="row p-t-2">
                 <div class="col-md-3">
                     <img :src="card.imageUrl" :alt="card.name" :class="borderColor" />
                     <small class="artist" v-if="card.artist">Artist: {{ card.artist }}</small>
@@ -44,6 +45,7 @@
 
 <script>
 import Legality from '../components/Legality.vue'
+import Spinner from '../components/Spinner.vue'
 
 export default {
     data () {
@@ -108,7 +110,8 @@ export default {
         }
     },
     components: {
-        legality: Legality
+        legality: Legality,
+        spinner: Spinner
     }
 }
 </script>

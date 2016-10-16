@@ -308,7 +308,7 @@ export default {
                     if (this.$route.query.name) this.name = this.$route.query.name
                     if (this.$route.query.set) this.set = this.$route.query.set
                     if (this.$route.query.colors) this.colors = this.$route.query.colors.split(',')
-                    if (this.$route.query.type) this.type = this.$route.query.type
+                    if (this.$route.query.types) this.type = this.$route.query.types
                     if (this.$route.query.rarity) this.rarity = this.$route.query.rarity
                     this.pagination.currentPage = parseInt(this.$route.query.page)
                     // trigger initial search
@@ -335,6 +335,7 @@ export default {
         background-position-x: center;
         border-radius: 0;
         padding: 2rem 0;
+        box-shadow: #5f5f5f 0px 2px 25px;
     }
 
     .jumbotron .lead {
