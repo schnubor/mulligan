@@ -111,20 +111,22 @@
         <!-- Cards -->
         <div class="container" v-if="fetched" key="fetched">
             <!-- Filter -->
-            <div class="row">
-                <div class="col-md-3 form-inline">
-                    <span>Sort by</span>
-                    <select class="form-control form-control-sm" v-model="sorting">
-                        <option value="name">Name</option>
-                        <option value="cmc">CMC</option>
-                    </select>
-                    <button class="btn btn-sm btn-secondary" @click="order *= -1"><i class="fa fa-arrows-v"></i> Reverse</button>
+            <div v-if="totalPages > 1">
+                <div class="row">
+                    <div class="col-md-3 form-inline">
+                        <span>Sort by</span>
+                        <select class="form-control form-control-sm" v-model="sorting">
+                            <option value="name">Name</option>
+                            <option value="cmc">CMC</option>
+                        </select>
+                        <button class="btn btn-sm btn-secondary" @click="order *= -1"><i class="fa fa-arrows-v"></i> Reverse</button>
+                    </div>
+                    <div class="col-md-9">
+                        <pagination v-if="totalPages > 1" :page="pagination.currentPage" :pageCount="totalPages" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
+                    </div>
                 </div>
-                <div class="col-md-9">
-                    <pagination v-if="totalPages > 1" :page="pagination.currentPage" :pageCount="totalPages" @nextPage="paginate('next')" @prevPage="paginate('prev')"></pagination>
-                </div>
+                <hr>
             </div>
-            <hr>
 
             <!-- Card list -->
             <cardList :cards="chunkedPage"></cardList>
