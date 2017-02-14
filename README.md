@@ -7,6 +7,8 @@
 Little website for Magic: The Gathering card search and deck building.
 Thanks to [Andrew Backes](https://github.com/adback03) for building [https://magicthegathering.io/](https://magicthegathering.io/)
 
+Check it out here: [http://mulligan.chko.org/](http://mulligan.chko.org/)
+
 ## Build Setup
 
 ``` bash
